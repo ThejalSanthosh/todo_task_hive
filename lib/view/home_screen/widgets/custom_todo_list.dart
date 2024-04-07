@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:todo_task/core/color_constants/color_constants.dart';
 
 class CustomToDo extends StatefulWidget {
@@ -6,12 +7,13 @@ class CustomToDo extends StatefulWidget {
       {super.key,
       this.onDeletePressed,
       required this.title,
-      required this.category});
+      required this.category,this.onChanged, required this.isCompeted});
 
-  bool isChecked = false;
   final String title;
   final String category;
+  final bool isCompeted;
   final void Function()? onDeletePressed;
+  final void Function(bool?)? onChanged;
 
   @override
   State<CustomToDo> createState() => _CustomToDoState();
@@ -25,32 +27,31 @@ class _CustomToDoState extends State<CustomToDo> {
       child: Row(
         children: [
           Checkbox(
-            value: widget.isChecked,
-            onChanged: (value) {
-              widget.isChecked = value!;
-              setState(() {});
-            },
+            value: widget.isCompeted,
+            onChanged: widget.onChanged,
           ),
-          Text(
-            "${widget.category} - ",
-          ),
+
           Expanded(
-            child: Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.title,
-                  style: widget.isChecked == false
-                      ? TextStyle(
-                          color: ColorConstants.primaryBlue, fontSize: 20)
-                      : TextStyle(
-                          color: ColorConstants.primaryBlue,
-                          fontSize: 20,
-                          decoration: TextDecoration.lineThrough),
-                ),
-              ],
+            child: RichText(
+              text: TextSpan(
+                text: "${widget.category} - ",
+                style: widget.isCompeted == false
+                    ? TextStyle(
+                        color: ColorConstants.primaryBlack, fontSize: 20)
+                    : TextStyle(
+                        color: ColorConstants.primaryBlack,
+                        fontSize: 18,
+                        decoration: TextDecoration.lineThrough),
+                children: [
+                  TextSpan(
+                      text: widget.title,
+                      style: TextStyle(color: ColorConstants.primaryBlue)),
+                ],
+              ),
             ),
           ),
+       
+          Spacer(),
           InkWell(
             onTap: widget.onDeletePressed,
             child: Icon(

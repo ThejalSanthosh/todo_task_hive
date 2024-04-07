@@ -13,6 +13,7 @@ class HomeScreen extends StatefulWidget {
 
 String? selectedDropValue;
 TextEditingController titleController = TextEditingController();
+var formKey = GlobalKey<FormState>();
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
@@ -54,6 +55,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     return CustomToDo(
                       title: todoModel.title,
                       category: todoModel.category,
+                      isCompeted: todoModel.isCompleted,
+                      onChanged: (p0) async {
+
+                        todoModel.isCompleted=p0!;
+                      await  TodoController.updateTodoCompleted(TodoController.todoListKeys[index], todoModel);
+                        setState(() {
+                        });
+
+                        
+                      },
                       onDeletePressed: () async {
                         await TodoController.deleteTodoData(
                             TodoController.todoListKeys[index]);
@@ -91,84 +102,70 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Padding(
             padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: titleController,
-                  onTap: () {},
-                  decoration: InputDecoration(
-                      isDense: true,
-                      filled: true,
-                      fillColor: ColorConstants.primaryGrey,
-                      hintText: "Title",
-                      hintStyle: TextStyle(color: ColorConstants.primaryBlack),
-                      border: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: ColorConstants.primaryBlack),
-                          borderRadius: BorderRadius.circular(10))),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                DropdownButton(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  value: selectedDropValue,
-                  hint: Text("Category"),
-                  items: [
-                    DropdownMenuItem(
-                      child: Text("Personal"),
-                      value: "Personal",
-                    ),
-                    DropdownMenuItem(
-                      child: Text("Gym"),
-                      value: "Gym",
-                    )
-                  ],
-                  onChanged: (value) {
-                    bottomSetState(() {
-                      selectedDropValue = value;
-                    });
-                    print(selectedDropValue);
-                  },
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      width: 100,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: ColorConstants.primaryWhite),
-                      child: Center(
-                          child: Text(
-                        "Cancel",
-                        style: TextStyle(
-                            color: ColorConstants.primaryBlack,
-                            fontWeight: FontWeight.bold),
-                      )),
-                    ),
-                    InkWell(
-                      onTap: () async {
-                        await TodoController.addTodoData(TodoModel(
-                            title: titleController.text,
-                            category: selectedDropValue!,
-                            isCompleted: false));
-                        setState(() {});
-
-                        Navigator.pop(context);
-                      },
-                      child: Container(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: titleController,
+                    onTap: () {},
+                    decoration: InputDecoration(
+                        isDense: true,
+                        filled: true,
+                        fillColor: ColorConstants.primaryGrey,
+                        hintText: "Title",
+                        hintStyle:
+                            TextStyle(color: ColorConstants.primaryBlack),
+                        border: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: ColorConstants.primaryBlack),
+                            borderRadius: BorderRadius.circular(10))),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Title is Empty";
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  DropdownButton(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    value: selectedDropValue,
+                    hint: Text("Category"),
+                    items: [
+                      DropdownMenuItem(
+                        child: Text("Personal"),
+                        value: "Personal",
+                      ),
+                      DropdownMenuItem(
+                        child: Text("Gym"),
+                        value: "Gym",
+                      )
+                    ],
+                    onChanged: (value) {
+                      bottomSetState(() {
+                        selectedDropValue = value;
+                      });
+                      print(selectedDropValue);
+                    },
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Container(
                         padding: EdgeInsets.symmetric(vertical: 8),
                         width: 100,
                         decoration: BoxDecoration(
@@ -176,16 +173,42 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: ColorConstants.primaryWhite),
                         child: Center(
                             child: Text(
-                          "Add",
+                          "Cancel",
                           style: TextStyle(
                               color: ColorConstants.primaryBlack,
                               fontWeight: FontWeight.bold),
                         )),
                       ),
-                    ),
-                  ],
-                )
-              ],
+                      InkWell(
+                        onTap: () async {
+                          formKey.currentState!.validate();
+                          await TodoController.addTodoData(TodoModel(
+                              title: titleController.text,
+                              category: selectedDropValue!,
+                              isCompleted: false));
+                          setState(() {});
+
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          width: 100,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: ColorConstants.primaryWhite),
+                          child: Center(
+                              child: Text(
+                            "Add",
+                            style: TextStyle(
+                                color: ColorConstants.primaryBlack,
+                                fontWeight: FontWeight.bold),
+                          )),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
