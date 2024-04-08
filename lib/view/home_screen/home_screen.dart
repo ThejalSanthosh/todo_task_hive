@@ -57,13 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       category: todoModel.category,
                       isCompeted: todoModel.isCompleted,
                       onChanged: (p0) async {
-
-                        todoModel.isCompleted=p0!;
-                      await  TodoController.updateTodoCompleted(TodoController.todoListKeys[index], todoModel);
-                        setState(() {
-                        });
-
-                        
+                        todoModel.isCompleted = p0!;
+                        await TodoController.updateTodoCompleted(
+                            TodoController.todoListKeys[index], todoModel);
+                        setState(() {});
                       },
                       onDeletePressed: () async {
                         await TodoController.deleteTodoData(
@@ -154,13 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   SizedBox(
-                    height: 15,
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  SizedBox(
-                    height: 15,
+                    height: 30,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
